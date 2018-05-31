@@ -7,22 +7,34 @@ import com.yj.crawler.page.PageParserTool;
 import com.yj.crawler.page.RequestAndResponseTool;
 import com.yj.crawler.utils.FileTool;
 import org.jsoup.select.Elements;
-
-import java.io.File;
 import java.util.*;
 
 /**
  * @date: 2018/5/30
  * @author: create by Right_ydd
  * @description: com.yj.crawler.main
+ * 设计思路，两个线程抓取连接 两个线程消费连接
  */
-public class MyCrawler {
+public class MyCrawler implements Runnable{
+    /**
+     * 定义过滤器，提取以 xxx 开头的连接
+     */
+    LinkFilter filter = new LinkFilter() {
+        @Override
+        public boolean accept(String url) {
+            if(url.startsWith("http://m.xiachufang.com/recipe/")){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    };
 
     /**
      * 使用种子初始化URL队列
      * @param seeds 种子URL
      */
-    private void initCrawlerWithSeeds(String[] seeds){
+    private static void initCrawlerWithSeeds(String[] seeds){
         for(int i=0;i<seeds.length;i++){
             Links.addUnvisitedUrlQueue(seeds[i]);
         }
@@ -30,26 +42,16 @@ public class MyCrawler {
 
     /**
      * 抓取过程
-     * @param seeds
+     * @param
      */
-    public void crawling(String[] seeds){
-        // 初始化 URL 队列
-        initCrawlerWithSeeds(seeds);
+    @Override
+    public void run(){
 
-        // 定义过滤器，提取以http：//www.baidu.com开头的连接
-        LinkFilter filter = new LinkFilter() {
-            @Override
-            public boolean accept(String url) {
-                if(url.startsWith("http://m.xiachufang.com/recipe/")){
-                    return true;
-                }else{
-                    return false;
-                }
-            }
-        };
-
-        //循环条件：待抓取的连接不空且抓取的网页不多于1000
-        while(!Links.unVisitedUrlQueueIsEmpty() & Links.getVisitedUrlNum() <=1000){
+        /**
+         * 循环条件：待抓取的连接不空且抓取的网页不多于1000 && Links.getVisitedUrlNum() <=1000
+         * 当前条件为待访问序列不为空
+         */
+        while(!Links.unVisitedUrlQueueIsEmpty()){
             //先从待访问的序列中取出第一个
             String visitUrl = (String) Links.removeHeadOfUnVisitedUrlQueue();
             if( visitUrl == null ){
@@ -91,7 +93,9 @@ public class MyCrawler {
 
     //main 方法入口
     public static void main(String[] args) {
-        MyCrawler crawler = new MyCrawler();
-        crawler.crawling(new String[]{"http://m.xiachufang.com/"});
+        // 初始化 URL 队列
+        initCrawlerWithSeeds(new String[]{"http://m.xiachufang.com/"});
+
     }
+
 }

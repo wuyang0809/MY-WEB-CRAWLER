@@ -7,6 +7,23 @@ import java.util.*;
 
 public class PageParserTool {
 
+    /**存储待解析的page*/
+    private static Vector<Page> unAnalyzePage = new Vector<Page>();
+
+    public static Page getunAnalyzePage(){
+        synchronized (unAnalyzePage){
+            return unAnalyzePage.remove(0);
+        }
+    }
+
+    public static List<Page> getunAnalyzePages(){
+        synchronized (unAnalyzePage){
+            List<Page> pageList = new ArrayList<>(unAnalyzePage.subList(0,10));
+            unAnalyzePage.subList(0,10).clear();
+            return pageList;
+        }
+    }
+
     /**
      * 通过选择器来选取页面的元素
      * @param page
@@ -76,7 +93,7 @@ public class PageParserTool {
     public static Map<String,String> getHtml(Page page, String cssSelector_1, String cssSelector_2){
         ArrayList<String> result = new ArrayList<String>();
         Elements elements = select(page, "ul[class=plain] li");
-        Map<String,String> map = new HashMap<String,String>();
+        Map<String,String> map = new LinkedHashMap<String,String>();
         for(Element element : elements){
             Element element_1 = element.select(cssSelector_1).first();
             Element element_2 = element.select(cssSelector_2).first();
