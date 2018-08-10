@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 
 /**
  * 字符集自动检测
- *
  * @author hu
  */
 public class CharsetDetector {
@@ -43,7 +42,11 @@ public class CharsetDetector {
             "<meta\\s+charset\\s*=\\s*[\"']?([a-z][_\\-0-9a-z]*)[^>]*>",
             Pattern.CASE_INSENSITIVE);
 
-    //从Nutch借鉴的网页编码检测代码
+    /**
+     * 从Nutch借鉴的网页编码检测代码
+     * @param content
+     * @return
+     */
     private static String guessEncodingByNutch(byte[] content) {
         int length = Math.min(content.length, CHUNK_SIZE);
 
@@ -87,7 +90,6 @@ public class CharsetDetector {
 
     /**
      * 根据字节数组，猜测可能的字符集，如果检测失败，返回utf-8
-     *
      * @param bytes 待检测的字节数组
      * @return 可能的字符集，如果检测失败，返回utf-8
      */

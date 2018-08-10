@@ -2,10 +2,7 @@ package com.yj.crawler.utils;
 
 import com.yj.crawler.page.Page;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * @date: 2018/5/30
@@ -14,12 +11,14 @@ import java.io.IOException;
  */
 public class FileTool {
 
-    private static String dirPath;
-
+    private static String dirPath = "d:/";
 
     /**
      * getMethod.getResponseHeader("Content-Type").getValue()
      * 根据 URL 和网页类型生成需要保存的网页的文件名，去除 URL 中的非文件名字符
+     * @param url
+     * @param contentType
+     * @return
      */
     private static String getFileNameByUrl(String url, String contentType) {
         //去除 http://
@@ -36,9 +35,9 @@ public class FileTool {
         }
     }
 
-    /*
-     *  生成目录
-     * */
+    /**
+     * 生成目录
+     */
     private static void mkdir() {
         if (dirPath == null) {
             dirPath = Class.class.getClass().getResource("/").getPath() + "temp\\";
@@ -51,15 +50,14 @@ public class FileTool {
 
     /**
      * 保存网页字节数组到本地文件，filePath 为要保存的文件的相对地址
+     * @param page
      */
-
-    public static void saveToLocal(Page page) {
+    public static void saveToLocal(Page page) throws UnsupportedEncodingException {
         mkdir();
-        String fileName =  getFileNameByUrl(page.getUrl(), page.getContentType()) ;
+        String fileName =  getFileNameByUrl(page.getUrl(), page.getContentType());
         String filePath = dirPath + fileName ;
         byte[] data = page.getContent();
         try {
-            //Files.lines(Paths.get("D:\\jd.txt"), StandardCharsets.UTF_8).forEach(System.out::println);
             DataOutputStream out = new DataOutputStream(new FileOutputStream(new File(filePath)));
             for (int i = 0; i < data.length; i++) {
                 out.write(data[i]);

@@ -1,7 +1,5 @@
 package com.yj.crawler.link;
 
-import com.yj.crawler.page.Page;
-
 import java.util.*;
 
 /**

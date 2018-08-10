@@ -9,15 +9,13 @@ import com.yj.crawler.utils.FileTool;
 import org.jsoup.select.Elements;
 
 import java.io.UnsupportedEncodingException;
-import java.util.*;
 
 /**
- * @date: 2018/5/30
- * @author: create by Right_ydd
- * @description: com.yj.crawler.main
- * 设计思路，两个线程抓取连接 两个线程消费连接
+ * 连接爬取，生产目标文件
+ * @author wuyang
+ * @date 2018/7/31 15:04
  */
-public class MyCrawler implements Runnable{
+public class CrawlerProduce extends Thread {
 
     /**
      * 定义过滤器，提取以 xxx 开头的连接
@@ -25,7 +23,7 @@ public class MyCrawler implements Runnable{
     LinkFilter filter = new LinkFilter() {
         @Override
         public boolean accept(String url) {
-            if(url.startsWith("http://m.xiachufang.com/recipe/")){
+            if(url.startsWith("http://202.96.245.182/xxcx/yp.jsp")){
                 return true;
             }else{
                 return false;
@@ -43,63 +41,43 @@ public class MyCrawler implements Runnable{
         }
     }
 
-    /**
-     * 抓取过程
-     * @param
-     */
     @Override
-    public void run(){
+    public void run() {
 
         /**
          * 循环条件：待抓取的连接不空且抓取的网页不多于1000 && Links.getVisitedUrlNum() <=1000
          * 当前条件为待访问序列不为空
          */
-        while(!Links.unVisitedUrlQueueIsEmpty()){
+        int i = 1;
+        while(i == 1){
+            initCrawlerWithSeeds(new String[]{"http://202.96.245.182/xxcx/yp.jsp?sPagenum="+i});
             //先从待访问的序列中取出第一个
             String visitUrl = (String) Links.removeHeadOfUnVisitedUrlQueue();
             if( visitUrl == null ){
                 continue;
             }
 
-            //根据URL得到page
-            Page page = RequestAndResponseTool.sendRequestAndGetResponse(visitUrl);
-
-            Elements elements = PageParserTool.select(page,"a");
-
             if(filter.accept(visitUrl)) {
-                Map<String,String> subMap = PageParserTool.getHtml(page,"aside[class=sub-title]","p[class=word-wrap]");
-                Iterator iterator = subMap.entrySet().iterator();
-                while (iterator.hasNext()){
-                    Map.Entry entry = (Map.Entry) iterator.next();
-                    System.out.println(entry.getKey());
-                    System.out.println(entry.getValue());
-                    iterator.remove();
-                }
+                //根据URL得到page
+                Page page = RequestAndResponseTool.sendRequestAndGetResponse(visitUrl);
+                Elements elements = PageParserTool.select(page,"tr[bgcolor='#FFFFFF']");
+                System.out.println(elements.select("td").eq(0).first().text());
                 //保存文件
                 try {
                     FileTool.saveToLocal(page);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-                return ;
+                //将已经访问过的连接放入已访问的连接中
+                Links.addVisitedUrlSet(visitUrl);
             }
-            //将已经访问过的连接放入已访问的连接中
-            Links.addVisitedUrlSet(visitUrl);
-
-            //得到超链接
-            Set<String> links = PageParserTool.getLinks(page,"a");
-            for(String link : links){
-                Links.addUnvisitedUrlQueue(link);
-                //System.out.println("新增爬取路径: " + link);
-            }
+            i++;
         }
     }
 
-    //main 方法入口
     public static void main(String[] args) {
-        // 初始化 URL 队列
-        initCrawlerWithSeeds(new String[]{"http://m.xiachufang.com/"});
-        MyCrawler myCrawler = new MyCrawler();
-    }
+        Thread thread = new CrawlerProduce();
+        thread.start();
 
+    }
 }

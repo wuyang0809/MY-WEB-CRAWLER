@@ -1,8 +1,9 @@
 package com.yj.crawler.page;
 
+import com.yj.crawler.ip.Ip;
+import com.yj.crawler.ip.IpProduce;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
 import java.util.*;
 
 public class PageParserTool {
@@ -103,5 +104,16 @@ public class PageParserTool {
             map.put(element_1.text(),element_2.text());
         }
         return map;
+    }
+
+    public static void getAttrs(Page page) throws InterruptedException {
+        Elements elements = select(page, "tr[class]");
+
+        for(Element element : elements){
+            String ipAddress = element.child(1).text();
+            int port = Integer.parseInt(element.child(2).text());
+            IpProduce.ipOriginal.put(new Ip(ipAddress, port));
+            System.out.println("当前生产队列数量为："+IpProduce.ipOriginal.size());
+        }
     }
 }

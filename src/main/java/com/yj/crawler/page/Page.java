@@ -12,7 +12,7 @@ import java.io.UnsupportedEncodingException;
  */
 public class Page {
 
-    /***/
+    /** 网页内容 */
     private byte[] content;
     /**网页源码字符串*/
     private String html;
@@ -57,7 +57,8 @@ public class Page {
             return null;
         }
         if(charset==null){
-            charset = CharsetDetector.guessEncoding(content); // 根据内容来猜测 字符编码
+            // 根据内容来猜测 字符编码
+            charset = CharsetDetector.guessEncoding(content);
         }
         try {
             this.html = new String(content, charset);
@@ -68,9 +69,10 @@ public class Page {
         }
     }
 
-    /*
-     *  得到文档
-     * */
+    /**
+     * 得到文档
+     * @return
+     */
     public Document getDoc(){
         if (doc != null) {
             return doc;
