@@ -7,6 +7,7 @@ import com.yj.crawler.page.PageParserTool;
 import com.yj.crawler.page.RequestAndResponseTool;
 import com.yj.crawler.utils.FileTool;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -70,6 +71,8 @@ public class IpProduce extends Thread {
                 try {
                     FileTool.saveToLocal(page);
                 } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
                 //将已经访问过的连接放入已访问的连接中

@@ -41,7 +41,7 @@ public class Page {
         return contentType;
     }
     public byte[] getContent(){
-        return content;
+        return getHtml().getBytes();
     }
 
     /**

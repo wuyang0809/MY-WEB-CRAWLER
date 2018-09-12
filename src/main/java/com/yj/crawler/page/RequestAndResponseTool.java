@@ -5,9 +5,19 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.util.EntityUtils;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RequestAndResponseTool {
 
@@ -17,11 +27,11 @@ public class RequestAndResponseTool {
         // 1. 生成 HttpClient 对象并且设置参数
         HttpClient httpClient = new HttpClient();
         // 设置 HTTP 连接超时 5s
-        httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+        httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(6000);
         // 2. 生成 GetMethod 对象并设置参数
         GetMethod getMethod = new GetMethod(url);
         // 设置 get 请求超时 5s
-        getMethod.getParams().setParameter(HttpMethodParams.SO_TIMEOUT,5000);
+        getMethod.getParams().setParameter(HttpMethodParams.SO_TIMEOUT,6000);
         // 设置请求重试处理
         getMethod.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler());
         // 3. 执行 HTTP GET 请求
@@ -50,5 +60,10 @@ public class RequestAndResponseTool {
         }
 
         return page;
+    }
+
+
+    public static void main(String[] args) {
+        Map<String,Object> data =new HashMap<String,Object>();
     }
 }

@@ -51,22 +51,57 @@ public class FileTool {
     /**
      * 保存网页字节数组到本地文件，filePath 为要保存的文件的相对地址
      * @param page
+     * @return  返回文件保存路径
+     * @throws UnsupportedEncodingException
      */
-    public static void saveToLocal(Page page) throws UnsupportedEncodingException {
+    public static String saveToLocal(Page page) throws IOException {
         mkdir();
         String fileName =  getFileNameByUrl(page.getUrl(), page.getContentType());
-        String filePath = dirPath + fileName ;
+        String filePath = dirPath + fileName;
         byte[] data = page.getContent();
+        DataOutputStream out = null;
         try {
-            DataOutputStream out = new DataOutputStream(new FileOutputStream(new File(filePath)));
+            out = new DataOutputStream(new FileOutputStream(new File(filePath)));
             for (int i = 0; i < data.length; i++) {
                 out.write(data[i]);
             }
-            out.flush();
-            out.close();
-            System.out.println("文件："+ fileName + "已经被存储在"+ filePath  );
+            System.out.println(filePath);
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            out.flush();
+            out.close();
         }
+        return filePath;
+    }
+
+    /**
+     * 根据文件的路径读取文件内容
+     * @param filePath 绝对路径
+     * @return 返回该文件的内容
+     * @throws IOException
+     */
+    public static String readFile(String filePath) throws IOException {
+        File file = new File(filePath);
+        FileReader fileReader = null;
+        BufferedReader bufferedReader = null;
+        StringBuilder stringBuilder = null;
+        try {
+            fileReader = new FileReader(file);
+            bufferedReader = new BufferedReader(fileReader);
+            stringBuilder = new StringBuilder();
+            String s = "";
+            while ((s = bufferedReader.readLine()) != null){
+                stringBuilder.append(s);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            fileReader.close();
+            bufferedReader.close();
+        }
+        return String.valueOf(stringBuilder);
     }
 }

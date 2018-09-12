@@ -1,10 +1,17 @@
 package com.yj.crawler.page;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.yj.crawler.ip.Ip;
 import com.yj.crawler.ip.IpProduce;
+import com.yj.crawler.main.BjMedical;
+import com.yj.crawler.main.MedicalInsuranceDrug;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.util.*;
+
+import static com.alibaba.fastjson.JSON.toJSONString;
 
 public class PageParserTool {
 
@@ -115,5 +122,37 @@ public class PageParserTool {
             IpProduce.ipOriginal.put(new Ip(ipAddress, port));
             System.out.println("当前生产队列数量为："+IpProduce.ipOriginal.size());
         }
+    }
+
+    public static String getBjMedical(Document document){
+        Elements elements = document.select("table[width='100%']");
+
+        List<BjMedical> bjMedicalList = new ArrayList<BjMedical>();
+        for(Element element : elements){
+            BjMedical bjMedical = new BjMedical();
+            bjMedical.setName(element.select("td").eq(0).select("font").text().replace("【药品名称】",""));
+            bjMedical.setNumber(element.select("td").eq(1).select("font").text().replace("【编号】",""));
+            bjMedical.setType(element.select("td").eq(2).select("font").text().replace("【类型】",""));
+            bjMedical.setFormulation(element.select("td").eq(3).select("font").text().replace("【剂型】",""));
+            bjMedical.setRemark(element.select("td").eq(4).select("font").text().replace("【备注】",""));
+            bjMedical.setMedicarePaymentStandard(element.select("td").eq(5).select("font").text().replace("【医保支付标准】",""));
+            bjMedicalList.add(bjMedical);
+        }
+        return JSON.toJSONString(bjMedicalList);
+    }
+
+    public static String getMedicalInsuranceDrug(Document document){
+        Elements elements = document.select("tr[bgcolor='#FFFFFF']").select("tr");
+
+        List<MedicalInsuranceDrug> medicalInsuranceDrugList = new ArrayList<MedicalInsuranceDrug>();
+        for(Element element : elements){
+            MedicalInsuranceDrug medicalInsuranceDrug = new MedicalInsuranceDrug();
+            medicalInsuranceDrug.setCommonName(element.select("td").eq(0).text());
+            medicalInsuranceDrug.setFormulation(element.select("td").eq(1).text());
+            medicalInsuranceDrug.setPay(element.select("td").eq(2).text());
+            medicalInsuranceDrug.setType(element.select("td").eq(3).text());
+            medicalInsuranceDrugList.add(medicalInsuranceDrug);
+        }
+        return JSON.toJSONString(medicalInsuranceDrugList);
     }
 }

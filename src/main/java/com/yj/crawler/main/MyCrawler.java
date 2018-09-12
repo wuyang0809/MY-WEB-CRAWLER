@@ -8,6 +8,7 @@ import com.yj.crawler.page.RequestAndResponseTool;
 import com.yj.crawler.utils.FileTool;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -79,6 +80,8 @@ public class MyCrawler implements Runnable{
                 try {
                     FileTool.saveToLocal(page);
                 } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
                 return ;
